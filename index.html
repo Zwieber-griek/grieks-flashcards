@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Grieks — Flashcards</title>
+<style>
+  :root {
+    --bg: #1a1a1f;
+    --card: #26262e;
+    --card-hover: #2f2f38;
+    --text: #f0f0f5;
+    --muted: #8a8a95;
+    --accent: #6fb3ff;
+    --again: #e06c6c;
+    --hard: #e0a76c;
+    --good: #6ce08a;
+    --easy: #6fb3ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .progress {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 3rem;
+    min-width: 340px;
+    max-width: 640px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .task-chip {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+  .task-chip.letter-name { color: #6fb3ff; border-color: #6fb3ff55; background: #6fb3ff10; }
+  .task-chip.gr-to-la   { color: #6ce08a; border-color: #6ce08a55; background: #6ce08a10; }
+  .task-chip.la-to-gr   { color: #e0a76c; border-color: #e0a76c55; background: #e0a76c10; }
+  .task-chip.letter-gap { color: #c98adb; border-color: #c98adb55; background: #c98adb10; }
+  .task-chip.classify   { color: #dbcf8a; border-color: #dbcf8a55; background: #dbcf8a10; }
+  .task-chip.gr-to-nl   { color: #ff8ab3; border-color: #ff8ab355; background: #ff8ab310; }
+  .question {
+    color: var(--text);
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 0 0 1rem;
+  }
+  .example {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+    font-style: italic;
+    display: none;
+  }
+  .example.shown { display: block; }
+  .hint-btn {
+    background: transparent;
+    color: var(--muted);
+    border: 1px dashed #3a3a44;
+    border-radius: 6px;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-top: 0.75rem;
+  }
+  .hint-btn:hover { color: var(--text); border-color: #5a5a64; }
+  .hint-btn.used { opacity: 0.5; cursor: default; }
+  .front {
+    font-size: 6rem;
+    font-weight: 300;
+    line-height: 1;
+    margin: 1rem 0 2rem;
+  }
+  .front.word { font-size: 3.5rem; }
+  .prompt {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .answer-input {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-size: 1.3rem;
+    background: #1a1a1f;
+    color: var(--text);
+    border: 2px solid #3a3a44;
+    border-radius: 8px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .answer-input:focus { border-color: var(--accent); }
+  .answer-input:disabled { opacity: 0.7; }
+  .helper-kb {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  .helper-kb button {
+    background: #2f2f38;
+    color: var(--text);
+    border: 1px solid #3a3a44;
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .helper-kb button:hover { background: #3a3a44; }
+  .choices {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .choices button {
+    background: #3a3a44;
+    color: var(--text);
+    border: 2px solid #4a4a54;
+    border-radius: 8px;
+    padding: 0.8rem 1.6rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 140px;
+    transition: transform 0.1s, background 0.15s;
+  }
+  .choices button:hover { background: #4a4a54; transform: translateY(-2px); }
+  .submit-row {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background: #3a3a44;
+    color: var(--text);
+  }
+  .btn:hover { background: #4a4a54; }
+  .btn-primary { background: var(--accent); color: #1a1a1f; font-weight: 500; }
+  .btn-primary:hover { opacity: 0.9; background: var(--accent); }
+  .feedback {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    display: none;
+    text-align: left;
+  }
+  .feedback.shown { display: block; }
+  .feedback.correct { background: #1e3a24; border-left: 4px solid var(--good); }
+  .feedback.wrong { background: #3a1e1e; border-left: 4px solid var(--again); }
+  .feedback .verdict {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .feedback.correct .verdict { color: var(--good); }
+  .feedback.wrong .verdict { color: var(--again); }
+  .feedback .detail {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .feedback .detail strong { color: var(--text); }
+  .next-row {
+    margin-top: 1.5rem;
+    display: none;
+    justify-content: center;
+  }
+  .next-row.shown { display: flex; }
+  .next-btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--accent);
+    color: #1a1a1f;
+    transition: transform 0.1s;
+  }
+  .next-btn:hover { transform: translateY(-2px); }
+  .requeue-note {
+    color: var(--hard);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+  .done { text-align: center; max-width: 640px; }
+  .done h1 { font-weight: 300; }
+  .summary {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: left;
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    margin: 1.5rem 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .copy-btn {
+    background: var(--accent);
+    color: #1a1a1f;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .copy-btn:hover { opacity: 0.9; }
+  .copied { color: var(--good); margin-left: 1rem; opacity: 0; transition: opacity 0.3s; }
+  .copied.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div id="card-view" class="card">
+  <div class="task-chip" id="task-chip">LETTER → NAAM</div>
+  <div class="front" id="front">Α</div>
+
+  <div class="question" id="question">Wat is de naam van deze letter?</div>
+  <input type="text" class="answer-input" id="answer-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="helper-kb" id="helper-kb"></div>
+  <div class="choices" id="choices"></div>
+  <div>
+    <button class="hint-btn" id="hint-btn" onclick="showHint()">💡 Hint</button>
+  </div>
+  <div class="example" id="example"></div>
+
+  <div class="submit-row">
+    <button class="btn" id="skip-btn">Ik weet het niet</button>
+    <button class="btn btn-primary" id="submit-btn" onclick="checkAnswer()">Controleer (Enter)</button>
+  </div>
+
+  <div class="feedback" id="feedback">
+    <div class="verdict" id="verdict"></div>
+    <div class="detail" id="detail"></div>
+    <div class="requeue-note" id="requeue-note">Deze kaart komt straks terug in de wachtrij.</div>
+  </div>
+
+  <div class="next-row" id="next-row">
+    <button class="next-btn" id="next-btn" onclick="nextCard()">Volgende → (Enter)</button>
+  </div>
+</div>
+
+<div id="done-view" class="done" style="display:none">
+  <h1>Sessie klaar!</h1>
+  <p>Kopieer de samenvatting en plak 'm terug in de chat.</p>
+  <div class="summary" id="summary"></div>
+  <button class="copy-btn" onclick="copySummary()">📋 Kopieer samenvatting</button>
+  <span class="copied" id="copied">gekopieerd!</span>
+</div>
+
+<script>
+  // Cards:
+  //   lang:     "grieks" of "latijn" (taal van de VOORKANT)
+  //   front:    wat getoond wordt
+  //   expected: wat de gebruiker moet typen (string of array van alternatieven)
+  //   back:     volledige uitleg (getoond na antwoord)
+  //   wordMode: kleinere front-font voor woorden
+  // SESSIE 15 (2026-04-21) — Unit 0.02 — Vowel sounds:
+  //   7 voorbeeldwoorden × 3 richtingen (Gr→La, La→Gr, Gr→NL) = 21 kaarten
+  //   woorden: αεροπλάνο, ελικόπτερο, ήρωας, ιδέα, οξυγόνο, υπόθεση, ώρα
+  const cards = [
+    // === Gr → La (transliteratie) ===
+    { id: "word-aeroplano-gr-la", lang: "grieks", front: "αεροπλάνο", expected: ["aeroplano"], back: "αεροπλάνο (aeroplano) = vliegtuig. Voorbeeldwoord voor klinker α.", wordMode: true },
+    { id: "word-elikoptero-gr-la", lang: "grieks", front: "ελικόπτερο", expected: ["elikoptero"], back: "ελικόπτερο (elikóptero) = helikopter. Voorbeeldwoord voor klinker ε.", wordMode: true },
+    { id: "word-iroas-gr-la", lang: "grieks", front: "ήρωας", expected: ["iroas"], back: "ήρωας (íroas) = held. Voorbeeldwoord voor klinker η — klinkt als 'ie'.", wordMode: true },
+    { id: "word-idea-gr-la", lang: "grieks", front: "ιδέα", expected: ["idea"], back: "ιδέα (idéa) = idee. Voorbeeldwoord voor klinker ι — klinkt als 'ie'.", wordMode: true },
+    { id: "word-oksigono-gr-la", lang: "grieks", front: "οξυγόνο", expected: ["oksigono", "oksygono"], back: "οξυγόνο (oksigóno) = zuurstof. Voorbeeldwoord voor klinker ο. Let op: ξ = 'ks', γ = zachte 'g'.", wordMode: true },
+    { id: "word-ipothesi-gr-la", lang: "grieks", front: "υπόθεση", expected: ["ipothesi"], back: "υπόθεση (ipóthesi) = hypothese. Voorbeeldwoord voor klinker υ — klinkt als 'ie'.", wordMode: true },
+    { id: "word-ora-gr-la", lang: "grieks", front: "ώρα", expected: ["ora"], back: "ώρα (óra) = uur. Voorbeeldwoord voor klinker ω.", wordMode: true },
+
+    // === La → Gr (productie) ===
+    { id: "word-aeroplano-la-gr", lang: "latijn", front: "aeroplano", expected: ["αεροπλάνο"], back: "αεροπλάνο = vliegtuig. Klemtoon op á (voorlaatste lettergreep).", wordMode: true },
+    { id: "word-elikoptero-la-gr", lang: "latijn", front: "elikoptero", expected: ["ελικόπτερο"], back: "ελικόπτερο = helikopter. Klemtoon op ό.", wordMode: true },
+    { id: "word-iroas-la-gr", lang: "latijn", front: "iroas", expected: ["ήρωας"], back: "ήρωας = held. Begint met η (niet ι of υ). Eind-sigma: ς.", wordMode: true },
+    { id: "word-idea-la-gr", lang: "latijn", front: "idea", expected: ["ιδέα"], back: "ιδέα = idee. Begint met ι. Klemtoon op é.", wordMode: true },
+    { id: "word-oksigono-la-gr", lang: "latijn", front: "oksigono", expected: ["οξυγόνο"], back: "οξυγόνο = zuurstof. ξ voor 'ks', γ voor zachte 'g'. ο-υ-ο in de 3 laatste klinkers — niet ο-ι-ο.", wordMode: true },
+    { id: "word-ipothesi-la-gr", lang: "latijn", front: "ipothesi", expected: ["υπόθεση"], back: "υπόθεση = hypothese. Begint met υ (niet ι of η). θ voor 'th'. Eindigt op η.", wordMode: true },
+    { id: "word-ora-la-gr", lang: "latijn", front: "ora", expected: ["ώρα"], back: "ώρα = uur. ω (niet ο) aan het begin.", wordMode: true },
+
+    // === Gr → NL (betekenis) ===
+    { id: "word-aeroplano-gr-nl", lang: "grieks", front: "αεροπλάνο", expected: ["vliegtuig"], back: "αεροπλάνο = vliegtuig (aeroplane).", wordMode: true },
+    { id: "word-elikoptero-gr-nl", lang: "grieks", front: "ελικόπτερο", expected: ["helikopter"], back: "ελικόπτερο = helikopter.", wordMode: true },
+    { id: "word-iroas-gr-nl", lang: "grieks", front: "ήρωας", expected: ["held", "hero"], back: "ήρωας = held (hero). Zelfde stam als 'heroïsch'.", wordMode: true },
+    { id: "word-idea-gr-nl", lang: "grieks", front: "ιδέα", expected: ["idee", "idea"], back: "ιδέα = idee (idea).", wordMode: true },
+    { id: "word-oksigono-gr-nl", lang: "grieks", front: "οξυγόνο", expected: ["zuurstof", "oxygen"], back: "οξυγόνο = zuurstof (oxygen).", wordMode: true },
+    { id: "word-ipothesi-gr-nl", lang: "grieks", front: "υπόθεση", expected: ["hypothese", "hypothesis"], back: "υπόθεση = hypothese.", wordMode: true },
+    { id: "word-ora-gr-nl", lang: "grieks", front: "ώρα", expected: ["uur", "hour"], back: "ώρα = uur.", wordMode: true },
+  ];
+
+  // Greek letters present across all decks — used for the on-screen keyboard (if needed)
+  const greekHelperLetters = [
+    "α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ", "λ", "μ",
+    "ν", "ξ", "ο", "π", "ρ", "σ", "ς", "τ", "υ", "φ", "χ", "ψ", "ω",
+    "Α", "Β", "Γ", "Δ", "Ε", "Ζ", "Η", "Θ", "Ι", "Κ", "Λ", "Μ",
+    "Ν", "Ξ", "Ο", "Π", "Ρ", "Σ", "Τ", "Υ", "Φ", "Χ", "Ψ", "Ω"
+  ];
+
+  // Session state
+  let queue = [];              // cards still to be shown (may contain requeued)
+  const attempts = new Map();  // card.id -> [{user, correct, skipped, hintUsed}, ...]
+  let currentCard = null;
+  let state = "answering";     // "answering" | "feedback"
+  const totalCards = cards.length;
+
+  function normalize(s) {
+    return (s || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, ""); // strip accents (tonos etc.)
+  }
+
+  function isCorrect(user, expected) {
+    const u = normalize(user);
+    const list = Array.isArray(expected) ? expected : [expected];
+    return list.some(e => normalize(e) === u);
+  }
+
+  function expectedDisplay(expected) {
+    return Array.isArray(expected) ? expected[0] : expected;
+  }
+
+  const TASK_CONFIG = {
+    "letter-name": {
+      chip: "LETTER → NAAM",
+      question: "Typ de naam van deze letter",
+      example: "bijv. alfa, mi, omikron — met of zonder accent",
+    },
+    "gr-to-la": {
+      chip: "GRIEKS → LATIJN",
+      question: "Typ dit in Latijnse letters",
+      example: "bv. μαμά → mama",
+    },
+    "la-to-gr": {
+      chip: "LATIJN → GRIEKS",
+      question: "Typ dit in Griekse letters",
+      example: "gebruik het Griekse toetsenbord onder het veld",
+    },
+    "letter-gap": {
+      chip: "ONTBREKENDE LETTER",
+      question: "Welke letter ontbreekt in de reeks?",
+      example: "bijv. α ? γ → β (de letter tussen alfa en gamma)",
+    },
+    "classify": {
+      chip: "KLINKER OF MEDEKLINKER?",
+      question: "Is deze letter een klinker of een medeklinker?",
+      example: "typ 'klinker' of 'medeklinker' (ook 'vowel'/'consonant' mag)",
+    },
+    "gr-to-nl": {
+      chip: "GRIEKS → NEDERLANDS",
+      question: "Wat betekent dit in het Nederlands?",
+      example: "typ de Nederlandse betekenis — Engels mag ook",
+    },
+  };
+
+  function getTask(c) {
+    if (c.id.startsWith("classify-")) return "classify";
+    if (c.id.startsWith("gap-")) return "letter-gap";
+    if (c.id.startsWith("letter-")) return "letter-name";
+    if (c.id.endsWith("-gr-nl")) return "gr-to-nl";
+    if (c.lang === "grieks") return "gr-to-la";
+    return "la-to-gr";
+  }
+
+  function initSession() {
+    queue = cards.slice().sort(() => Math.random() - 0.5);
+    attempts.clear();
+    showNext();
+  }
+
+  function showNext() {
+    if (queue.length === 0) { showDone(); return; }
+    currentCard = queue.shift();
+    currentCard._hintUsed = false;
+    render();
+  }
+
+  function render() {
+    const c = currentCard;
+    const done = Array.from(attempts.values())
+      .filter(a => a.some(x => x.correct)).length;
+    document.getElementById("progress").textContent =
+      `${done} / ${totalCards} klaar · nog ${queue.length + 1} te gaan`;
+
+    const task = getTask(c);
+    const cfg = TASK_CONFIG[task];
+    const chip = document.getElementById("task-chip");
+    chip.textContent = cfg.chip;
+    chip.className = "task-chip " + task;
+    document.getElementById("question").textContent = cfg.question;
+
+    // Hint: hidden by default
+    const exampleEl = document.getElementById("example");
+    exampleEl.textContent = cfg.example;
+    exampleEl.classList.remove("shown");
+    const hintBtn = document.getElementById("hint-btn");
+    hintBtn.classList.remove("used");
+    hintBtn.style.display = "";
+
+    const front = document.getElementById("front");
+    front.textContent = c.front;
+    front.className = "front" + (c.wordMode ? " word" : "");
+
+    // Reset input
+    const input = document.getElementById("answer-input");
+    input.value = "";
+    input.placeholder = "";
+    input.disabled = false;
+    input.focus();
+
+    // Greek helper keyboard for latijn→grieks AND letter-gap cards
+    const kb = document.getElementById("helper-kb");
+    kb.innerHTML = "";
+    if (task === "la-to-gr" || task === "letter-gap") {
+      greekHelperLetters.forEach(l => {
+        const b = document.createElement("button");
+        b.textContent = l;
+        b.type = "button";
+        b.onclick = () => { input.value += l; input.focus(); };
+        kb.appendChild(b);
+      });
+    }
+
+    // Multiple-choice buttons (if the card provides a `choices` array)
+    const ch = document.getElementById("choices");
+    ch.innerHTML = "";
+    if (Array.isArray(c.choices) && c.choices.length) {
+      c.choices.forEach(choice => {
+        const b = document.createElement("button");
+        b.textContent = choice;
+        b.type = "button";
+        b.onclick = () => {
+          if (state !== "answering") return;
+          input.value = choice;
+          checkAnswer();
+        };
+        ch.appendChild(b);
+      });
+      // Hide text input + submit button: we want click-only here
+      input.style.display = "none";
+      document.getElementById("submit-btn").style.display = "none";
+    } else {
+      input.style.display = "";
+      document.getElementById("submit-btn").style.display = "";
+    }
+
+    // Reset feedback UI
+    document.getElementById("feedback").classList.remove("shown", "correct", "wrong");
+    document.getElementById("next-row").classList.remove("shown");
+    document.getElementById("submit-btn").style.display = "";
+    document.getElementById("skip-btn").style.display = "";
+    state = "answering";
+  }
+
+  function showHint() {
+    if (state !== "answering") return;
+    document.getElementById("example").classList.add("shown");
+    document.getElementById("hint-btn").classList.add("used");
+    currentCard._hintUsed = true;
+  }
+
+  function recordAttempt(c, user, correct, skipped) {
+    if (!attempts.has(c.id)) attempts.set(c.id, []);
+    attempts.get(c.id).push({ user, correct, skipped, hintUsed: !!c._hintUsed });
+    if (!correct) {
+      // Requeue at a random position 3–6 cards later
+      const insertAt = Math.min(queue.length, 3 + Math.floor(Math.random() * 4));
+      queue.splice(insertAt, 0, c);
+    }
+  }
+
+  function checkAnswer() {
+    if (state !== "answering") return;
+    const user = document.getElementById("answer-input").value;
+    const correct = isCorrect(user, currentCard.expected);
+    recordAttempt(currentCard, user, correct, false);
+    showFeedback(user, correct, false);
+  }
+
+  function reveal() {
+    if (state !== "answering") return;
+    recordAttempt(currentCard, "", false, true);
+    showFeedback("", false, true);
+  }
+
+  function showFeedback(userAnswer, correct, skipped) {
+    const c = currentCard;
+    const fb = document.getElementById("feedback");
+    const verdict = document.getElementById("verdict");
+    const detail = document.getElementById("detail");
+
+    if (correct) {
+      fb.classList.add("shown", "correct");
+      verdict.textContent = "✓ Goed!";
+    } else if (skipped) {
+      fb.classList.add("shown", "wrong");
+      verdict.textContent = "Overgeslagen — fout";
+    } else {
+      fb.classList.add("shown", "wrong");
+      verdict.textContent = "✗ Fout";
+    }
+
+    const exp = expectedDisplay(c.expected);
+    let html = "";
+    if (!correct && !skipped) html += `<div>Jouw antwoord: <strong>${userAnswer || "(leeg)"}</strong></div>`;
+    html += `<div>Juiste antwoord: <strong>${exp}</strong></div>`;
+    if (c.back && c.back !== exp) html += `<div style="margin-top:.5rem">${c.back}</div>`;
+    detail.innerHTML = html;
+
+    // Show/hide requeue note
+    document.getElementById("requeue-note").style.display = correct ? "none" : "";
+
+    document.getElementById("answer-input").disabled = true;
+    document.getElementById("submit-btn").style.display = "none";
+    document.getElementById("skip-btn").style.display = "none";
+    document.getElementById("hint-btn").style.display = "none";
+    document.getElementById("next-row").classList.add("shown");
+    document.getElementById("next-btn").focus();
+    state = "feedback";
+  }
+
+  function nextCard() {
+    if (state !== "feedback") return;
+    showNext();
+  }
+
+  function showDone() {
+    document.getElementById("card-view").style.display = "none";
+    document.getElementById("done-view").style.display = "block";
+    document.getElementById("progress").textContent = "";
+
+    // Compute per-card stats
+    const rows = [];
+    let firstTryCorrect = 0;
+    cards.forEach(c => {
+      const a = attempts.get(c.id) || [];
+      if (a.length === 0) return;
+      const firstOK = a[0].correct;
+      if (firstOK) firstTryCorrect++;
+      const mark = firstOK ? "✓" : (a.length === 1 ? "✗" : `↻${a.length}`);
+      const hint = a.some(x => x.hintUsed) ? " 💡" : "";
+      const typedList = a.map(x => x.skipped ? "(overgeslagen)" : `"${x.user}"`).join(" → ");
+      rows.push({
+        firstOK,
+        line: `${mark}${hint}  ${c.front}  →  ${expectedDisplay(c.expected)}   | ${typedList}`
+      });
+    });
+
+    // Sort: fouten eerst, daarna goed
+    rows.sort((a, b) => (a.firstOK === b.firstOK) ? 0 : a.firstOK ? 1 : -1);
+
+    const header = `SESSIE ${new Date().toISOString().slice(0,10)}`;
+    const wrongCount = totalCards - firstTryCorrect;
+    const pct = Math.round(100 * firstTryCorrect / totalCards);
+    document.getElementById("summary").textContent =
+      header + "\n" + "=".repeat(header.length) +
+      `\nEerste keer goed: ${firstTryCorrect}/${totalCards} (${pct}%)` +
+      `\nMoest herhaald worden: ${wrongCount}\n\n` +
+      `Legenda: ✓ = direct goed · ✗ = fout (1 poging) · ↻N = N pogingen nodig · 💡 = hint gebruikt\n\n` +
+      rows.map(r => r.line).join("\n");
+  }
+
+  function copySummary() {
+    const text = document.getElementById("summary").textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const el = document.getElementById("copied");
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2000);
+    });
+  }
+
+  document.addEventListener("keydown", e => {
+    if (state === "answering" && e.key === "Enter") {
+      e.preventDefault();
+      checkAnswer();
+    } else if (state === "feedback" && e.key === "Enter") {
+      e.preventDefault();
+      nextCard();
+    }
+  });
+
+  // Update the skip button to no longer take an argument
+  document.getElementById("skip-btn").onclick = () => reveal();
+
+  initSession();
+</script>
+</body>
+</html>
