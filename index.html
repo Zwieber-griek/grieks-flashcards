@@ -291,39 +291,11 @@
   //   expected: wat de gebruiker moet typen (string of array van alternatieven)
   //   back:     volledige uitleg (getoond na antwoord)
   //   wordMode: kleinere front-font voor woorden
-  // SESSIE 18 (2026-05-06) — Unit 0.02 review + Unit 0.04 (diftongen):
-  //   - REVIEW: 7 voorbeeldwoorden × 3 richtingen = 21 kaarten (check of 90% nog staat)
-  //   - NIEUW: 6 diftong-herkenning (αι, ει, οι, ου, αυ, ευ) + 8 voorbeeldwoorden Gr→La = 14 kaarten
-  //   woorden: αεροπλάνο, ελικόπτερο, ήρωας, ιδέα, οξυγόνο, υπόθεση, ώρα
+  // SESSIE 20 (2026-06-02) — Unit 0.04 diftongen + Unit 0.05 two-letter consonants:
+  //   - Vowel-woorden (21) geparkeerd: plateau bereikt 95% in S19, blijven in SRS voor latere reviews.
+  //   - ACTIEF: 14 diftongen (S18-nieuw, nog 🧠) + 14 nieuwe two-letter consonants = 28 kaarten
   const cards = [
-    // === Gr → La (transliteratie) ===
-    { id: "word-aeroplano-gr-la", lang: "grieks", front: "αεροπλάνο", expected: ["aeroplano"], back: "αεροπλάνο (aeroplano) = vliegtuig. Voorbeeldwoord voor klinker α.", wordMode: true },
-    { id: "word-elikoptero-gr-la", lang: "grieks", front: "ελικόπτερο", expected: ["elikoptero"], back: "ελικόπτερο (elikóptero) = helikopter. Voorbeeldwoord voor klinker ε.", wordMode: true },
-    { id: "word-iroas-gr-la", lang: "grieks", front: "ήρωας", expected: ["iroas"], back: "ήρωας (íroas) = held. Voorbeeldwoord voor klinker η — klinkt als 'ie'.", wordMode: true },
-    { id: "word-idea-gr-la", lang: "grieks", front: "ιδέα", expected: ["idea"], back: "ιδέα (idéa) = idee. Voorbeeldwoord voor klinker ι — klinkt als 'ie'.", wordMode: true },
-    { id: "word-oksigono-gr-la", lang: "grieks", front: "οξυγόνο", expected: ["oksigono", "oksygono"], back: "οξυγόνο (oksigóno) = zuurstof. Voorbeeldwoord voor klinker ο. Let op: ξ = 'ks', γ = zachte 'g'.", wordMode: true },
-    { id: "word-ipothesi-gr-la", lang: "grieks", front: "υπόθεση", expected: ["ipothesi"], back: "υπόθεση (ipóthesi) = hypothese. Voorbeeldwoord voor klinker υ — klinkt als 'ie'.", wordMode: true },
-    { id: "word-ora-gr-la", lang: "grieks", front: "ώρα", expected: ["ora"], back: "ώρα (óra) = uur. Voorbeeldwoord voor klinker ω.", wordMode: true },
-
-    // === La → Gr (productie) ===
-    { id: "word-aeroplano-la-gr", lang: "latijn", front: "aeroplano", expected: ["αεροπλάνο"], back: "αεροπλάνο = vliegtuig. Klemtoon op á (voorlaatste lettergreep).", wordMode: true },
-    { id: "word-elikoptero-la-gr", lang: "latijn", front: "elikoptero", expected: ["ελικόπτερο"], back: "ελικόπτερο = helikopter. Klemtoon op ό.", wordMode: true },
-    { id: "word-iroas-la-gr", lang: "latijn", front: "iroas", expected: ["ήρωας"], back: "ήρωας = held. Begint met η (niet ι of υ). Eind-sigma: ς.", wordMode: true },
-    { id: "word-idea-la-gr", lang: "latijn", front: "idea", expected: ["ιδέα"], back: "ιδέα = idee. Begint met ι. Klemtoon op é.", wordMode: true },
-    { id: "word-oksigono-la-gr", lang: "latijn", front: "oksigono", expected: ["οξυγόνο"], back: "οξυγόνο = zuurstof. ξ voor 'ks', γ voor zachte 'g'. ο-υ-ο in de 3 laatste klinkers — niet ο-ι-ο.", wordMode: true },
-    { id: "word-ipothesi-la-gr", lang: "latijn", front: "ipothesi", expected: ["υπόθεση"], back: "υπόθεση = hypothese. Begint met υ (niet ι of η). θ voor 'th'. Eindigt op η.", wordMode: true },
-    { id: "word-ora-la-gr", lang: "latijn", front: "ora", expected: ["ώρα"], back: "ώρα = uur. ω (niet ο) aan het begin.", wordMode: true },
-
-    // === Gr → NL (betekenis) ===
-    { id: "word-aeroplano-gr-nl", lang: "grieks", front: "αεροπλάνο", expected: ["vliegtuig"], back: "αεροπλάνο = vliegtuig (aeroplane).", wordMode: true },
-    { id: "word-elikoptero-gr-nl", lang: "grieks", front: "ελικόπτερο", expected: ["helikopter"], back: "ελικόπτερο = helikopter.", wordMode: true },
-    { id: "word-iroas-gr-nl", lang: "grieks", front: "ήρωας", expected: ["held", "hero"], back: "ήρωας = held (hero). Zelfde stam als 'heroïsch'.", wordMode: true },
-    { id: "word-idea-gr-nl", lang: "grieks", front: "ιδέα", expected: ["idee", "idea"], back: "ιδέα = idee (idea).", wordMode: true },
-    { id: "word-oksigono-gr-nl", lang: "grieks", front: "οξυγόνο", expected: ["zuurstof", "oxygen"], back: "οξυγόνο = zuurstof (oxygen).", wordMode: true },
-    { id: "word-ipothesi-gr-nl", lang: "grieks", front: "υπόθεση", expected: ["hypothese", "hypothesis"], back: "υπόθεση = hypothese.", wordMode: true },
-    { id: "word-ora-gr-nl", lang: "grieks", front: "ώρα", expected: ["uur", "hour"], back: "ώρα = uur.", wordMode: true },
-
-    // === NIEUW: diftong-herkenning (Unit 0.04) ===
+    // === diftong-herkenning (Unit 0.04) ===
     { id: "dift-ai-sound", lang: "grieks", front: "αι", expected: ["e"], back: "αι = klank 'e' (zoals in 'set'). Voorbeeld: ναι (ne) = ja." },
     { id: "dift-ei-sound", lang: "grieks", front: "ει", expected: ["i"], back: "ει = klank 'i' (zoals in 'inn'). Voorbeeld: είμαι (íme) = ik ben." },
     { id: "dift-oi-sound", lang: "grieks", front: "οι", expected: ["i"], back: "οι = klank 'i' (zoals in 'inn'). Voorbeeld: οικονομία (ikonomía) = economie." },
@@ -340,6 +312,24 @@
     { id: "word-evropi-gr-la", lang: "grieks", front: "Ευρώπη", expected: ["evropi"], back: "Ευρώπη (evrópi) = Europa. ευ vóór ρ (stemhebbend) → 'ev'.", wordMode: true },
     { id: "word-ikonomia-gr-la", lang: "grieks", front: "οικονομία", expected: ["ikonomia"], back: "οικονομία (ikonomía) = economie. οι = 'i'.", wordMode: true },
     { id: "word-uranos-gr-la", lang: "grieks", front: "ουρανός", expected: ["uranos"], back: "ουρανός (uranós) = hemel (ook: Uranus). ου = 'u'.", wordMode: true },
+
+    // === NIEUW: two-letter consonants herkenning (Unit 0.05) ===
+    { id: "tlc-gg-sound", lang: "grieks", front: "γγ", expected: ["ng"], back: "γγ = 'ng' (zoals in 'engel' / Engels 'England'). Voorbeeld: Αγγλία (anglía) = Engeland." },
+    { id: "tlc-gk-sound", lang: "grieks", front: "γκ", expected: ["g", "ng"], back: "γκ = 'g' aan woordbegin (γκολφ = golf), 'ng' in midden (άγκυρα = ánkira = anker). Twee klanken — startpositie bepaalt welke." },
+    { id: "tlc-mp-sound", lang: "grieks", front: "μπ", expected: ["b", "mb"], back: "μπ = 'b' aan woordbegin (μπράβο = brávo), 'mb' in midden (λάμπα = lámba = lamp). De Grieken hebben geen losse b-letter — μπ doet die taak." },
+    { id: "tlc-nt-sound", lang: "grieks", front: "ντ", expected: ["d", "nd"], back: "ντ = 'd' aan woordbegin (ντομάτα = domáta), 'nd' in midden (μοντέρνο = modérno). De Grieken hebben geen losse d-letter — ντ doet die taak." },
+    { id: "tlc-ts-sound", lang: "grieks", front: "τσ", expected: ["ts"], back: "τσ = 'ts' (zoals in 'tsaar'). Voorbeeld: τσιγάρο (tsigáro) = sigaret." },
+    { id: "tlc-tz-sound", lang: "grieks", front: "τζ", expected: ["tz", "dz"], back: "τζ = 'tz/dz' (zoals in Engels 'jazz'). Voorbeeld: τζαζ (tzaz) = jazz." },
+
+    // === NIEUW: two-letter consonant voorbeeldwoorden Gr→La (Unit 0.05) ===
+    { id: "word-anglia-gr-la", lang: "grieks", front: "Αγγλία", expected: ["anglia"], back: "Αγγλία (anglía) = Engeland. γγ = 'ng'.", wordMode: true },
+    { id: "word-golf-gr-la", lang: "grieks", front: "γκολφ", expected: ["golf"], back: "γκολφ (golf) = golf. γκ aan begin = 'g'.", wordMode: true },
+    { id: "word-bravo-gr-la", lang: "grieks", front: "μπράβο", expected: ["bravo"], back: "μπράβο (brávo) = bravo. μπ aan begin = 'b'.", wordMode: true },
+    { id: "word-lamba-gr-la", lang: "grieks", front: "λάμπα", expected: ["lamba"], back: "λάμπα (lámba) = lamp. μπ in midden = 'mb'.", wordMode: true },
+    { id: "word-domata-gr-la", lang: "grieks", front: "ντομάτα", expected: ["domata"], back: "ντομάτα (domáta) = tomaat. ντ aan begin = 'd'.", wordMode: true },
+    { id: "word-moderno-gr-la", lang: "grieks", front: "μοντέρνο", expected: ["moderno"], back: "μοντέρνο (modérno) = modern. ντ in midden = 'nd'.", wordMode: true },
+    { id: "word-tsigaro-gr-la", lang: "grieks", front: "τσιγάρο", expected: ["tsigaro"], back: "τσιγάρο (tsigáro) = sigaret. τσ = 'ts'.", wordMode: true },
+    { id: "word-tzaz-gr-la", lang: "grieks", front: "τζαζ", expected: ["tzaz", "dzaz"], back: "τζαζ (tzaz) = jazz. τζ = 'tz/dz'.", wordMode: true },
   ];
 
   // Greek letters present across all decks — used for the on-screen keyboard (if needed)
