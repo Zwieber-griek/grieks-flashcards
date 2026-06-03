@@ -291,8 +291,9 @@
   //   expected: wat de gebruiker moet typen (string of array van alternatieven)
   //   back:     volledige uitleg (getoond na antwoord)
   //   wordMode: kleinere front-font voor woorden
-  // SESSIE 15 (2026-04-21) — Unit 0.02 — Vowel sounds:
-  //   7 voorbeeldwoorden × 3 richtingen (Gr→La, La→Gr, Gr→NL) = 21 kaarten
+  // SESSIE 18 (2026-05-06) — Unit 0.02 review + Unit 0.04 (diftongen):
+  //   - REVIEW: 7 voorbeeldwoorden × 3 richtingen = 21 kaarten (check of 90% nog staat)
+  //   - NIEUW: 6 diftong-herkenning (αι, ει, οι, ου, αυ, ευ) + 8 voorbeeldwoorden Gr→La = 14 kaarten
   //   woorden: αεροπλάνο, ελικόπτερο, ήρωας, ιδέα, οξυγόνο, υπόθεση, ώρα
   const cards = [
     // === Gr → La (transliteratie) ===
@@ -321,6 +322,24 @@
     { id: "word-oksigono-gr-nl", lang: "grieks", front: "οξυγόνο", expected: ["zuurstof", "oxygen"], back: "οξυγόνο = zuurstof (oxygen).", wordMode: true },
     { id: "word-ipothesi-gr-nl", lang: "grieks", front: "υπόθεση", expected: ["hypothese", "hypothesis"], back: "υπόθεση = hypothese.", wordMode: true },
     { id: "word-ora-gr-nl", lang: "grieks", front: "ώρα", expected: ["uur", "hour"], back: "ώρα = uur.", wordMode: true },
+
+    // === NIEUW: diftong-herkenning (Unit 0.04) ===
+    { id: "dift-ai-sound", lang: "grieks", front: "αι", expected: ["e"], back: "αι = klank 'e' (zoals in 'set'). Voorbeeld: ναι (ne) = ja." },
+    { id: "dift-ei-sound", lang: "grieks", front: "ει", expected: ["i"], back: "ει = klank 'i' (zoals in 'inn'). Voorbeeld: είμαι (íme) = ik ben." },
+    { id: "dift-oi-sound", lang: "grieks", front: "οι", expected: ["i"], back: "οι = klank 'i' (zoals in 'inn'). Voorbeeld: οικονομία (ikonomía) = economie." },
+    { id: "dift-ou-sound", lang: "grieks", front: "ου", expected: ["u", "oe"], back: "ου = klank 'u/oe' (zoals in Nederlands 'boek'). Voorbeeld: ουρανός (uranós) = hemel." },
+    { id: "dift-au-sound", lang: "grieks", front: "αυ", expected: ["af", "av"], back: "αυ = 'af' vóór stemloze medeklinker (θ,κ,ξ,π,σ,τ,φ,χ,ψ), 'av' vóór klinker of stemhebbende. Voorbeelden: αυτοκίνητο (aftokínito), Αύγουστος (ávghustos)." },
+    { id: "dift-eu-sound", lang: "grieks", front: "ευ", expected: ["ef", "ev"], back: "ευ = 'ef' vóór stemloze medeklinker, 'ev' vóór klinker of stemhebbende. Voorbeelden: ευκαιρία (efkería), Ευρώπη (evrópi)." },
+
+    // === NIEUW: diftong-voorbeeldwoorden Gr→La (Unit 0.04) ===
+    { id: "word-nai-gr-la", lang: "grieks", front: "ναι", expected: ["ne"], back: "ναι (ne) = ja. αι spreekt uit als 'e'.", wordMode: true },
+    { id: "word-aftokinito-gr-la", lang: "grieks", front: "αυτοκίνητο", expected: ["aftokinito"], back: "αυτοκίνητο (aftokínito) = auto. αυ vóór τ (stemloos) → 'af'.", wordMode: true },
+    { id: "word-avgustos-gr-la", lang: "grieks", front: "Αύγουστος", expected: ["avgustos", "avghustos"], back: "Αύγουστος (ávghustos) = augustus. αυ vóór γ (stemhebbend) → 'av'. ου = 'u'.", wordMode: true },
+    { id: "word-ime-gr-la", lang: "grieks", front: "είμαι", expected: ["ime"], back: "είμαι (íme) = ik ben. ει = 'i', αι = 'e'.", wordMode: true },
+    { id: "word-efkeria-gr-la", lang: "grieks", front: "ευκαιρία", expected: ["efkeria"], back: "ευκαιρία (efkería) = kans. ευ vóór κ (stemloos) → 'ef'. αι = 'e'.", wordMode: true },
+    { id: "word-evropi-gr-la", lang: "grieks", front: "Ευρώπη", expected: ["evropi"], back: "Ευρώπη (evrópi) = Europa. ευ vóór ρ (stemhebbend) → 'ev'.", wordMode: true },
+    { id: "word-ikonomia-gr-la", lang: "grieks", front: "οικονομία", expected: ["ikonomia"], back: "οικονομία (ikonomía) = economie. οι = 'i'.", wordMode: true },
+    { id: "word-uranos-gr-la", lang: "grieks", front: "ουρανός", expected: ["uranos"], back: "ουρανός (uranós) = hemel (ook: Uranus). ου = 'u'.", wordMode: true },
   ];
 
   // Greek letters present across all decks — used for the on-screen keyboard (if needed)
